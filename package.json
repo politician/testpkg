@@ -1,7 +1,7 @@
 {
   "name": "@olivr/testpkg",
   "description": "ddd",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "author": {
     "name": "romain",
     "email": "romain@b.com",
