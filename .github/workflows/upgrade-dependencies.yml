@@ -1,5 +1,8 @@
 name: Upgrade NPM dependencies
 
+env:
+  node-version: 12
+
 on:
   push:
   schedule:
@@ -25,7 +28,7 @@ jobs:
       - name: Setup NodeJS environment
         uses: actions/setup-node@v1
         with:
-          node-version: 12
+          node-version: ${{ env.node-version }}
 
       - name: Soft upgrade
         run: yarn upgrade
@@ -64,18 +67,19 @@ jobs:
           path: .hard-upgrade
 
   # Test code with upgraded dependencies
+  # Todo: Whenever this is solved https://github.community/t/matrix-cannot-be-used-in-jobs-level-if/17177:
+  # add condition to skip hard tests if there isn't one (currently it will just fail at the download artifact step)
   test:
     name: Test ${{matrix.upgrade}} upgrade (${{matrix.os}})
+    runs-on: ${{ matrix.os }}
     needs: [upgrade]
-    if: ${{needs.upgrade.outputs.soft == 'true' || (needs.upgrade.outputs.hard == 'true' && matrix.upgrade == 'hard')}}
+    if: ${{needs.upgrade.outputs.soft == 'true' || needs.upgrade.outputs.hard == 'true'}}
+    continue-on-error: ${{ matrix.upgrade == 'hard' }} # Allow hard tests to fail
     strategy:
       fail-fast: true
       matrix:
-        os: [ubuntu-latest]
-        #os: [ubuntu-latest, windows-latest, macos-latest]
+        os: [ubuntu-latest, windows-latest, macos-latest]
         upgrade: [soft, hard]
-    runs-on: ${{ matrix.os }}
-    continue-on-error: ${{ matrix.upgrade == 'hard' }}
     outputs:
       hard-fail: ${{ steps.hard-fail.outputs.failed }}
     steps:
@@ -84,15 +88,15 @@ jobs:
         with:
           ref: ${{ github.head_ref }}
 
-      - name: Setup NodeJS environment
-        uses: actions/setup-node@v1
-        with:
-          node-version: 12
-
       - name: Download ${{matrix.upgrade}} upgrade state
         uses: actions/download-artifact@v2
         with:
           name: ${{matrix.upgrade}}-upgrade
+
+      - name: Setup NodeJS environment
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ env.node-version }}
 
       - name: Install dependencies
         run: yarn install --frozen-lockfile
