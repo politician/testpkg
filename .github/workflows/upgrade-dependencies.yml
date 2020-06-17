@@ -36,8 +36,6 @@ jobs:
       - name: Check for modified files
         id: git-check-soft
         run: echo ::set-output name=modified::$(if git diff --exit-code --quiet; then echo "false"; else echo "true"; fi)
-      - run: echo ${{ steps.git-check-soft.outputs.modified }}
-      - run: git diff
 
       - name: Upload soft upgrade state
         if: ${{ steps.git-check-soft.outputs.modified == 'true' }}
@@ -54,11 +52,7 @@ jobs:
       - name: Check for modified files
         if: ${{ steps.hard-upgrade.outcome != 'failure' }}
         id: git-check-hard
-        run: echo ::set-output name=modified::$(if git diff-index --quiet HEAD --; then echo "false"; else echo "true"; fi)
-
-      - run: echo ${{ steps.git-check-hard.outputs.modified }}
-      - run: git diff
-      - run: false
+        run: echo ::set-output name=modified::$(if git diff --exit-code --quiet; then echo "false"; else echo "true"; fi)
 
       - name: Prepare hard upgrade state
         if: ${{ steps.hard-upgrade.outcome != 'failure' && steps.git-check-hard.outputs.modified == 'true'}}
