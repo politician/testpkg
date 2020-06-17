@@ -70,13 +70,16 @@ jobs:
   hardtest:
     name: Test hard upgrade
     needs: [upgrade]
-    if: ${{ needs.upgrade.outputs.hard == 'true' }}
+    if: ${{ needs.upgrade.outputs.${{matrix.upgrade}} == 'true' }}
     strategy:
       fail-fast: true
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
+        upgrade: [hard, soft]
     runs-on: ${{ matrix.os }}
-    continue-on-error: true
+    continue-on-error: ${{ matrix.upgrade == 'hard' }}
+    outputs:
+      fail-hard: ${{ steps.git-check-soft.outputs.modified }}
     steps:
       - name: Checkout code
         uses: actions/checkout@master
@@ -88,10 +91,10 @@ jobs:
         with:
           node-version: 12
 
-      - name: Download hard upgrade state
+      - name: Download ${{matrix.upgrade}} upgrade state
         uses: actions/download-artifact@v2
         with:
-          name: hard-upgrade
+          name: ${{matrix.upgrade}}-upgrade
 
       - name: Install dependencies
         run: yarn install --frozen-lockfile
