@@ -103,7 +103,7 @@ jobs:
   softtest:
     name: Test soft upgrade
     needs: [upgrade, hardtest]
-    if: ${{ needs.hardtest.result != 'success' && needs.upgrade.outputs.soft == 'true' }}
+    #if: ${{ needs.hardtest.result != 'success' && needs.upgrade.outputs.soft == 'true' }}
     strategy:
       fail-fast: true
       matrix:
@@ -112,8 +112,8 @@ jobs:
     steps:
       - run: echo ${{needs.upgrade.result}}
       - run: echo ${{needs.hardtest.result}}
-      - run: echo ${{needs.hardtest.*.result}}
-      - run: echo ${{needs.hardtest}}
+      - run: echo ${{join(needs.hardtest.*.result)}}
+      - run: echo ${{join(needs.hardtest)}}
       - name: Checkout code
         uses: actions/checkout@master
         with:
