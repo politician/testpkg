@@ -18,8 +18,8 @@
     /* Redirect output structure to the directory. */
     "outDir": "./dist",
 
-    /* Specifies the root directory of input files. Use to control the output directory structure with --outDir. */
-    "rootDir": "./src",
+    /* List of root folders whose combined content represent the structure of the project at runtime. */
+    "rootDirs": ["./src"],
 
     /* Enable all strict type-checking options. */
     "strict": true,
