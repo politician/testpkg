@@ -97,7 +97,7 @@ jobs:
         run: yarn install --frozen-lockfile
 
       - name: Run tests
-        run: yarn testo
+        run: yarn test
 
   # Fallback to testing soft upgrade if hard upgrade testing failed
   softtest:
