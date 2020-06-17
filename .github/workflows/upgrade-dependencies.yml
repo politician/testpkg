@@ -37,8 +37,8 @@ jobs:
         id: git-check-soft
         run: echo ::set-output name=modified::$(if git diff --exit-code --quiet; then echo "false"; else echo "true"; fi)
       - run: echo ${{ steps.git-check-soft.outputs.modified }}
-      - run: git diff --exit-code --quiet
-      - run: false
+      - run: git diff
+
       - name: Upload soft upgrade state
         if: ${{ steps.git-check-soft.outputs.modified == 'true' }}
         uses: actions/upload-artifact@v2
@@ -55,6 +55,10 @@ jobs:
         if: ${{ steps.hard-upgrade.outcome != 'failure' }}
         id: git-check-hard
         run: echo ::set-output name=modified::$(if git diff-index --quiet HEAD --; then echo "false"; else echo "true"; fi)
+
+      - run: echo ${{ steps.git-check-hard.outputs.modified }}
+      - run: git diff
+      - run: false
 
       - name: Prepare hard upgrade state
         if: ${{ steps.hard-upgrade.outcome != 'failure' && steps.git-check-hard.outputs.modified == 'true'}}
