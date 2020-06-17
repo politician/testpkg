@@ -68,7 +68,7 @@ jobs:
 
   # Test hard upgrade
   hardtest:
-    name: Test ${{matrix.upgrade}} upgrade
+    name: Test ${{matrix.upgrade}} upgrade (${{matrix.os}})
     needs: [upgrade]
     if: ${{needs.upgrade.outputs.soft == 'true' || needs.upgrade.outputs.hard == 'true'}}
     strategy:
@@ -102,6 +102,14 @@ jobs:
       - name: Run tests
         run: yarn test
 
+      - name: Run tests
+        if: ${{ matrix.os == 'ubuntu-latest' &&  matrix.upgrade == 'hard'}}
+        run: false
+
+      - name: Run tests
+        if: ${{ matrix.os == 'windows-latest' &&  matrix.upgrade == 'soft'}}
+        run: false
+
       - name: Set hard upgrade as failed
         id: hard-fail
         if: ${{ failure() &&  matrix.upgrade == 'hard'}}
@@ -109,7 +117,7 @@ jobs:
 
   # Fallback to testing soft upgrade if hard upgrade testing failed
   softtest:
-    name: Test soft upgrade
+    name: check output
     needs: [upgrade, hardtest]
     #if: ${{ needs.hardtest.result != 'success' && needs.upgrade.outputs.soft == 'true' }}
     strategy:
