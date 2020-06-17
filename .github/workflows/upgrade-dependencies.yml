@@ -106,10 +106,6 @@ jobs:
         if: ${{ matrix.os == 'ubuntu-latest' &&  matrix.upgrade == 'hard'}}
         run: false
 
-      - name: Run tests
-        if: ${{ matrix.os == 'windows-latest' &&  matrix.upgrade == 'soft'}}
-        run: false
-
       - name: Set hard upgrade as failed
         id: hard-fail
         if: ${{ failure() &&  matrix.upgrade == 'hard'}}
