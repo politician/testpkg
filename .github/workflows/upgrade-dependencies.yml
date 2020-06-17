@@ -67,7 +67,7 @@ jobs:
           path: .hard-upgrade
 
   # Test hard upgrade
-  hardtest:
+  test:
     name: Test ${{matrix.upgrade}} upgrade (${{matrix.os}})
     needs: [upgrade]
     if: ${{needs.upgrade.outputs.soft == 'true' || needs.upgrade.outputs.hard == 'true'}}
@@ -75,6 +75,7 @@ jobs:
       fail-fast: true
       matrix:
         os: [ubuntu-latest]
+        #os: [ubuntu-latest, windows-latest, macos-latest]
         upgrade: [hard, soft]
     runs-on: ${{ matrix.os }}
     continue-on-error: ${{ matrix.upgrade == 'hard' }}
@@ -114,28 +115,25 @@ jobs:
   # Fallback to testing soft upgrade if hard upgrade testing failed
   softtest:
     name: check output
-    needs: [upgrade, hardtest]
-    #if: ${{ needs.hardtest.result != 'success' && needs.upgrade.outputs.soft == 'true' }}
-    strategy:
-      fail-fast: true
-      matrix:
-        os: [ubuntu-latest]
-    runs-on: ${{ matrix.os }}
+    needs: [upgrade, test]
+    #if: ${{ needs.test.result != 'success' && needs.upgrade.outputs.soft == 'true' }}
+    runs-on: ubuntu-latest
     steps:
       - run: echo ${{needs.upgrade.result}}
-      - run: echo ${{needs.hardtest.result}}
-      - run: echo ${{join(needs.hardtest.*.outputs.hard-fail)}}
-      - run: echo ${{join(needs.hardtest.outputs.*.hard-fail)}}
-      - run: echo ${{join(needs.hardtest.outputs.hard-fail.*)}}
-      - run: echo ${{join(needs.hardtest.outputs)}}
-      - run: echo ${{join(needs.hardtest)}}
+      - run: echo ${{needs.test.result}}
+      - run: echo ${{join(needs.test.outputs.hard-fail)}}
+      - run: echo ${{join(needs.test.*.outputs.hard-fail)}}
+      - run: echo ${{join(needs.test.outputs.*.hard-fail)}}
+      - run: echo ${{join(needs.test.outputs.hard-fail.*)}}
+      - run: echo ${{join(needs.test.outputs)}}
+      - run: echo ${{join(needs.test)}}
       - run: false
 
   # Commit changes if upgrade was successful
   commit:
     name: Commit changes
-    needs: [upgrade, hardtest, softtest]
-    if: ${{ needs.hardtest.result == 'success' || needs.softtest.result == 'success' }}
+    needs: [upgrade, test, softtest]
+    if: ${{ needs.test.result == 'success' || needs.softtest.result == 'success' }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -144,13 +142,13 @@ jobs:
           ref: ${{ github.head_ref }}
 
       - name: Download soft upgrade state
-        if: ${{ needs.softtest.result == 'success' && needs.hardtest.result != 'success' }}
+        if: ${{ needs.softtest.result == 'success' && needs.test.result != 'success' }}
         uses: actions/download-artifact@v2
         with:
           name: soft-upgrade
 
       - name: Download hard upgrade state
-        if: ${{ needs.hardtest.result == 'success' }}
+        if: ${{ needs.test.result == 'success' }}
         uses: actions/download-artifact@v2
         with:
           name: hard-upgrade
