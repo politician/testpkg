@@ -16,6 +16,7 @@ jobs:
     outputs:
       soft: ${{ steps.git-check-soft.outputs.modified }}
       hard: ${{ steps.git-check-hard.outputs.modified }}
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
     steps:
       - name: Checkout code
         uses: actions/checkout@master
@@ -50,6 +51,14 @@ jobs:
         continue-on-error: true
         run: yarn upgrade --latest
 
+      - id: set-matrix
+        if: ${{ steps.hard-upgrade.outcome != 'failure' }}
+        run: echo "::set-output name=matrix::[hard, soft]"
+
+      - id: set-matrix
+        if: ${{ steps.hard-upgrade.outcome == 'failure' }}
+        run: echo "::set-output name=matrix::[soft]"
+
       - name: Check for modified files
         if: ${{ steps.hard-upgrade.outcome != 'failure' }}
         id: git-check-hard
@@ -70,12 +79,12 @@ jobs:
   hardtest:
     name: Test hard upgrade
     needs: [upgrade]
-    if: ${{ needs.upgrade.outputs.${{matrix.upgrade}} == 'true' }}
     strategy:
       fail-fast: true
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
-        upgrade: [hard, soft]
+        upgrade: ${{needs.upgrade.outputs.matrix}}
+        #upgrade: [hard, soft]
     runs-on: ${{ matrix.os }}
     continue-on-error: ${{ matrix.upgrade == 'hard' }}
     outputs:
