@@ -16,7 +16,6 @@ jobs:
     outputs:
       soft: ${{ steps.git-check-soft.outputs.modified }}
       hard: ${{ steps.git-check-hard.outputs.modified }}
-      matrix: '{["hard","soft"]}'
     steps:
       - name: Checkout code
         uses: actions/checkout@master
@@ -68,14 +67,13 @@ jobs:
   test:
     name: Test ${{matrix.upgrade}} upgrade (${{matrix.os}})
     needs: [upgrade]
-    if: ${{needs.upgrade.outputs.soft == 'true' || needs.upgrade.outputs.hard == 'true'}}
+    if: ${{needs.upgrade.outputs.soft == 'true' || (needs.upgrade.outputs.hard == 'true' && matrix.upgrade == 'hard')}}
     strategy:
       fail-fast: true
       matrix:
         os: [ubuntu-latest]
         #os: [ubuntu-latest, windows-latest, macos-latest]
-        upgrade: ${{fromJSON(needs.upgrade.outputs.matrix)}}
-
+        upgrade: [soft, hard]
     runs-on: ${{ matrix.os }}
     continue-on-error: ${{ matrix.upgrade == 'hard' }}
     outputs:
