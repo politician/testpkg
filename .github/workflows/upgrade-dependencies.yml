@@ -74,7 +74,7 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
+        os: [ubuntu-latest]
         upgrade: [hard, soft]
     runs-on: ${{ matrix.os }}
     continue-on-error: ${{ matrix.upgrade == 'hard' }}
@@ -124,6 +124,7 @@ jobs:
     steps:
       - run: echo ${{needs.upgrade.result}}
       - run: echo ${{needs.hardtest.result}}
+      - run: echo ${{join(needs.hardtest.*.outputs.hard-fail)}}
       - run: echo ${{join(needs.hardtest.outputs.*.hard-fail)}}
       - run: echo ${{join(needs.hardtest.outputs.hard-fail.*)}}
       - run: echo ${{join(needs.hardtest.outputs)}}
