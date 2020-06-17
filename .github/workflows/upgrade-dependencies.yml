@@ -69,7 +69,7 @@ jobs:
   # Todo: Whenever this is solved https://github.community/t/matrix-cannot-be-used-in-jobs-level-if/17177
   # add condition to skip hard tests if there isn't one (currently it will just fail at the download artifact step)
   test:
-    name: Test upgrade
+    name: Test
     runs-on: ${{ matrix.os }}
     needs: [upgrade]
     if: ${{needs.upgrade.outputs.soft == 'true' || needs.upgrade.outputs.hard == 'true'}}
