@@ -16,7 +16,7 @@ jobs:
     outputs:
       soft: ${{ steps.git-check-soft.outputs.modified }}
       hard: ${{ steps.git-check-hard.outputs.modified }}
-      matrix: [hard, soft]
+      matrix: '[hard, soft]'
     steps:
       - name: Checkout code
         uses: actions/checkout@master
