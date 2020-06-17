@@ -103,10 +103,6 @@ jobs:
       - name: Run tests
         run: yarn test
 
-      - name: Run tests
-        if: ${{ matrix.os == 'ubuntu-latest' &&  matrix.upgrade == 'hard'}}
-        run: false
-
       - name: Set hard upgrade as failed
         id: hard-fail
         if: ${{ failure() &&  matrix.upgrade == 'hard'}}
@@ -132,8 +128,7 @@ jobs:
   # Commit changes if upgrade was successful
   commit:
     name: Commit changes
-    needs: [upgrade, test, softtest]
-    if: ${{ needs.test.result == 'success' || needs.softtest.result == 'success' }}
+    needs: [test]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -142,13 +137,13 @@ jobs:
           ref: ${{ github.head_ref }}
 
       - name: Download soft upgrade state
-        if: ${{ needs.softtest.result == 'success' && needs.test.result != 'success' }}
+        if: ${{ needs.test.outputs.hard-fail == 'true' }}
         uses: actions/download-artifact@v2
         with:
           name: soft-upgrade
 
       - name: Download hard upgrade state
-        if: ${{ needs.test.result == 'success' }}
+        if: ${{ needs.test.outputs.hard-fail != 'true' }}
         uses: actions/download-artifact@v2
         with:
           name: hard-upgrade
