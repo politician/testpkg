@@ -104,7 +104,7 @@ jobs:
   softtest:
     name: Test soft upgrade
     needs: [upgrade, hardtest]
-    if: ${{ needs.hardtest.outcome != 'success' && needs.upgrade.outputs.soft == 'true' }}
+    if: ${{ needs.hardtest.status != 'success' && needs.upgrade.outputs.soft == 'true' }}
     strategy:
       fail-fast: true
       matrix:
@@ -136,8 +136,8 @@ jobs:
   # Commit changes if upgrade was successful
   commit:
     name: Commit changes
-    needs: [hardtest, softtest]
-    if: ${{ needs.hardtest.outcome == 'success' || needs.softtest.outcome == 'success' }}
+    needs: [upgrade, hardtest, softtest]
+    if: ${{ needs.hardtest.status == 'success' || needs.softtest.status == 'success' }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -146,13 +146,13 @@ jobs:
           ref: ${{ github.head_ref }}
 
       - name: Download soft upgrade state
-        if: ${{ needs.softtest.outcome == 'success' }}
+        if: ${{ needs.softtest.status == 'success' && needs.hardtest.status != 'success' }}
         uses: actions/download-artifact@v2
         with:
           name: soft-upgrade
 
       - name: Download hard upgrade state
-        if: ${{ needs.hardtest.outcome == 'success' }}
+        if: ${{ needs.hardtest.status == 'success' }}
         uses: actions/download-artifact@v2
         with:
           name: hard-upgrade
