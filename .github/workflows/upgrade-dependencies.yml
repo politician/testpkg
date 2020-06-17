@@ -78,6 +78,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     continue-on-error: true
     steps:
+      - run: echo ${{needs.upgrade.outcome}}
       - name: Checkout code
         uses: actions/checkout@master
         with:
