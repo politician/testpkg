@@ -70,7 +70,7 @@ jobs:
   hardtest:
     name: Test hard upgrade
     needs: [upgrade]
-    if: ${{ needs.upgrade.outputs.hard == true }}
+    if: ${{ needs.upgrade.outputs.hard == 'true' }}
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
@@ -103,7 +103,7 @@ jobs:
   softtest:
     name: Test soft upgrade
     needs: [upgrade, hardtest]
-    if: ${{ needs.hardtest.outcome != 'success' && needs.upgrade.outputs.soft == true }}
+    if: ${{ needs.hardtest.outcome != 'success' && needs.upgrade.outputs.soft == 'true' }}
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
