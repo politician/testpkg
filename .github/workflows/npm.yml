@@ -37,7 +37,7 @@ jobs:
         run: yarn install --frozen-lockfile
 
       - name: Run tests
-        run: yarn test --coverage
+        run: yarn test
 
       - name: Upload test output
         uses: actions/upload-artifact@v2
