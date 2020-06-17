@@ -1,0 +1,98 @@
+{
+  "name": "@olivr/testpkg",
+  "description": "hello world",
+  "version": "0.0.0",
+  "author": {
+    "name": "romain"
+  },
+  "license": "Apache-2.0",
+  "homepage": "https://github.com/incorrupt/testpkg",
+  "repository": "https://github.com/incorrupt/testpkg",
+  "bugs": {
+    "url": "https://github.com/incorrupt/testpkg/issues"
+  },
+  "contributors": [
+    {
+      "name": "romain"
+    }
+  ],
+  "directories": {
+    "example": "./examples",
+    "test": "./tests"
+  },
+  "files": [
+    "dist/**/*"
+  ],
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org/",
+    "access": "public"
+  },
+  "jest": {
+    "collectCoverage": true,
+    "collectCoverageFrom": [
+      "src/**/*.[jt]s?(x)"
+    ],
+    "coverageDirectory": ".coverage",
+    "testMatch": [
+      "**/tests/**/*.[jt]s"
+    ],
+    "verbose": true,
+    "testEnvironment": "jsdom",
+    "testURL": "http://localhost",
+    "projects": [
+      {
+        "displayName": "Browser",
+        "testEnvironment": "jsdom"
+      },
+      {
+        "displayName": "Node.js",
+        "testEnvironment": "node"
+      }
+    ]
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.10.1",
+    "@babel/core": "^7.10.2",
+    "@babel/plugin-proposal-class-properties": "^7.10.1",
+    "@babel/plugin-proposal-object-rest-spread": "^7.10.1",
+    "@babel/plugin-transform-runtime": "^7.10.1",
+    "@babel/preset-env": "^7.10.2",
+    "@babel/preset-typescript": "^7.10.1",
+    "@types/jest": "^26.0.0",
+    "@typescript-eslint/eslint-plugin": "^3.2.0",
+    "@typescript-eslint/parser": "^3.2.0",
+    "@vue/babel-preset-app": "^4.4.1",
+    "babel-eslint": "^10.1.0",
+    "babel-jest": "^26.0.1",
+    "babel-preset-minify": "^0.5.1",
+    "eslint": "^7.2.0",
+    "eslint-config-prettier": "^6.11.0",
+    "eslint-plugin-babel": "^5.3.0",
+    "eslint-plugin-import": "^2.21.2",
+    "eslint-plugin-jest": "^23.13.2",
+    "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-prettier": "^3.1.3",
+    "jest": "^26.0.1",
+    "prettier": "^2.0.5",
+    "typescript": "^3.9.5"
+  },
+  "scripts": {
+    "test": "yarn test:types && jest && eslint .",
+    "test:types": "tsc --noEmit && tsc tests/*.ts --noEmit",
+    "test:types:watch": "yarn test:types --watch",
+    "build": "rm -rf dist && yarn build:types && yarn build:js && yarn build:js:min",
+    "build:js": "babel src --source-maps inline --extensions '.ts,.tsx,.js,.jsx' --out-dir dist",
+    "build:js:min": "yarn build:js --out-file-extension .min.js --presets minify",
+    "build:types": "tsc --emitDeclarationOnly",
+    "prepack": "yarn build",
+    "format": "eslint . --fix",
+    "watch": "yarn build:js --watch"
+  },
+  "dependencies": {
+    "@types/node": "^14.0.13",
+    "core-js": "3",
+    "tslib": "^2.0.0"
+  }
+}

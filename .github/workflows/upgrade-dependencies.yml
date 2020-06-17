@@ -1,0 +1,74 @@
+name: Upgrade NPM dependencies
+
+on:
+  push:
+  schedule:
+    # At 00:00 on Monday
+    - cron: '0 0 * * 1'
+
+jobs:
+  upgrade:
+    name: Upgrade packages
+    runs-on: macos-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@master
+        with:
+          ref: ${{ github.head_ref }}
+
+      - name: Setup NodeJS environment
+        uses: actions/setup-node@v1
+        with:
+          node-version: 12
+
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Soft upgrade
+        run: yarn upgrade
+
+      - name: Run tests
+        run: yarn test
+
+      - name: Backup state
+        run: cp yarn.lock yarn.lock.bk && cp package.json package.json.bk
+
+      - name: Hard upgrade
+        id: hardupgrade
+        continue-on-error: true
+        run: yarn upgrade --latest
+
+      - name: Run tests
+        id: hardtest
+        continue-on-error: true
+        run: yarn test
+
+      - name: Restore state if hard upgrade failed
+        if: ${{ steps.hardupgrade.outcome == 'failure' || steps.hardtest.outcome == 'failure' }}
+        run: cp yarn.lock.bk yarn.lock && cp package.json.bk package.json
+
+      - name: Delete state backup
+        run: rm -rf yarn.lock.bk package.json.bk
+
+      - name: Create Pull Request
+        id: cpr
+        uses: peter-evans/create-pull-request@v2
+        with:
+          branch: upgrade-dependencies-${{github.ref}}
+          commit-message: Upgrade dependencies
+          title: Changes by Upgrade action workflow
+          labels: automerge, dependencies
+
+      - name: Merge Pull Request
+        uses: actions/github-script@master
+        if: ${{ steps.cpr.outputs.pull-request-number > 0 }}
+        env:
+          pr_number: ${{ steps.cpr.outputs.pull-request-number }}
+        with:
+          github-token: ${{secrets.GITHUB_TOKEN}}
+          script: |
+            github.pulls.merge({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: process.env['pr_number']
+            })

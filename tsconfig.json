@@ -1,0 +1,43 @@
+{
+  "include": ["src/**/*"],
+  "compilerOptions": {
+    /* http: //json.schemastore.org/tsconfig */
+
+    /* List of library files to be included in the compilation. */
+    "lib": ["ESNEXT"],
+
+    /* Specify ECMAScript target version: 'ES3', 'ES5', 'ES6'/'ES2015', 'ES2016', 'ES2017', 'ES2018', 'ES2019', 'ES2020', 'ESNext' */
+    "target": "ESNEXT",
+
+    /* Specify module code generation: 'None', 'CommonJS', 'AMD', 'System', 'UMD', 'ES6', 'ES2015', 'ES2020' or 'ESNext'. */
+    "module": "CommonJS",
+
+    /* Specifies module resolution strategy: 'node' (Node) or 'classic' (TypeScript pre 1.6) . */
+    "moduleResolution": "node",
+
+    /* Redirect output structure to the directory. */
+    "outDir": "./dist",
+
+    /* Specifies the root directory of input files. Use to control the output directory structure with --outDir. */
+    "rootDir": "./src",
+
+    /* Enable all strict type-checking options. */
+    "strict": true,
+
+    /* Allow javascript files to be compiled. */
+    "allowJs": true,
+
+    /* Allow default imports from modules with no default export. This does not affect code emit, just typechecking. */
+    "allowSyntheticDefaultImports": true,
+
+    /* Enables emit interoperability between CommonJS and ES Modules via creation of namespace objects for all imports. Implies 'allowSyntheticDefaultImports'. */
+    "esModuleInterop": true,
+
+    /* Generates corresponding .d.ts file. */
+    "declaration": true,
+
+    /* Generates a sourcemap for each corresponding '.d.ts' file. */
+    "declarationMap": true,
+    "sourceMap": true
+  }
+}
