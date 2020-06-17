@@ -45,7 +45,7 @@ jobs:
         with:
           name: soft-upgrade
           path: yarn.lock
---exit-code --quiet
+
       - name: Hard upgrade
         id: hard-upgrade
         continue-on-error: true
