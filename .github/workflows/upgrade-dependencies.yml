@@ -48,16 +48,16 @@ jobs:
 
         #run: yarn upgrade --latest
       - name: Check for modified files
-        if: success()
+        if: ${{ steps.hard-upgrade.outcome != 'failure' }}
         id: git-check-hard
         run: echo ::set-output name=modified::$(if git diff-index --quiet HEAD --; then echo "false"; else echo "true"; fi)
 
       - name: Prepare hard upgrade state
-        if: success()
+        if: ${{ steps.hard-upgrade.outcome != 'failure' && steps.git-check-hard.outputs.modified == 'true'}}
         run: mkdir .hard-upgrade && cp yarn.lock .hard-upgrade/yarn.lock && cp package.json .hard-upgrade/package.json
 
       - name: Upload hard upgrade state
-        if: success()
+        if: ${{ steps.hard-upgrade.outcome != 'failure' && steps.git-check-hard.outputs.modified == 'true'}}
         uses: actions/upload-artifact@v2
         with:
           name: hard-upgrade
