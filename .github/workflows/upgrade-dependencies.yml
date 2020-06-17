@@ -33,8 +33,8 @@ jobs:
       - name: Run tests
         run: yarn test
 
-      - name: Backup state
-        run: cp yarn.lock yarn.lock.bk && cp package.json package.json.bk
+      - name: Save state
+        run: mkdir .upgrade-state && cp yarn.lock .upgrade-state/yarn.lock && cp package.json .upgrade-state/package.json
 
       - name: Hard upgrade
         id: hardupgrade
@@ -46,15 +46,15 @@ jobs:
         continue-on-error: true
         run: yarn test
 
-      - name: Restore state if hard upgrade failed
-        if: ${{ steps.hardupgrade.outcome == 'failure' || steps.hardtest.outcome == 'failure' }}
-        run: cp yarn.lock.bk yarn.lock && cp package.json.bk package.json
+      - name: Save state if hard upgrade succeeded
+        if: ${{ steps.hardupgrade.outcome != 'failure' && steps.hardtest.outcome != 'failure' }}
+        run: cp yarn.lock .upgrade-state/yarn.lock && cp package.json .upgrade-state/package.json
 
-      - name: Save dependency files
+      - name: Upload dependency state
         uses: actions/upload-artifact@v2
         with:
           name: dependencies
-          path: (yarn.lock|package.json)
+          path: .upgrade-state
 
   commit:
     name: Commit changes
@@ -66,7 +66,7 @@ jobs:
         with:
           ref: ${{ github.head_ref }}
 
-      - name: Download dependency files
+      - name: Download dependency state
         uses: actions/download-artifact@v2
         with:
           name: dependencies
