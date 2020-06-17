@@ -9,7 +9,10 @@ on:
 jobs:
   upgrade:
     name: Upgrade packages
-    runs-on: macos-latest
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout code
         uses: actions/checkout@master
@@ -47,8 +50,26 @@ jobs:
         if: ${{ steps.hardupgrade.outcome == 'failure' || steps.hardtest.outcome == 'failure' }}
         run: cp yarn.lock.bk yarn.lock && cp package.json.bk package.json
 
-      - name: Delete state backup
-        run: rm -rf yarn.lock.bk package.json.bk
+      - name: Save dependency files
+        uses: actions/upload-artifact@v2
+        with:
+          name: dependencies
+          path: (yarn.lock|package.json)
+
+  commit:
+    name: Commit changes
+    needs: [upgrade]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@master
+        with:
+          ref: ${{ github.head_ref }}
+
+      - name: Download dependency files
+        uses: actions/download-artifact@v2
+        with:
+          name: dependencies
 
       - name: Create Pull Request
         id: cpr
