@@ -35,11 +35,11 @@ jobs:
         run: echo ::set-output name=modified::$(if git diff-index --quiet HEAD --; then echo "false"; else echo "true"; fi)
 
       - name: Save soft upgrade state
-        if: steps.git-check-soft.outputs.modified == 'true'
+        if: ${{ steps.git-check-soft.outputs.modified == 'true' }}
         run: mkdir .soft-upgrade && cp yarn.lock .soft-upgrade/yarn.lock && cp package.json .soft-upgrade/package.json
 
       - name: Upload soft upgrade state
-        if: steps.git-check.outputs.modified == 'true'
+        if: ${{ steps.git-check-soft.outputs.modified == 'true' }}
         uses: actions/upload-artifact@v2
         with:
           name: soft-upgrade
@@ -74,6 +74,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
+      fail-fast: true
     runs-on: ${{ matrix.os }}
     continue-on-error: true
     steps:
