@@ -35,9 +35,9 @@ jobs:
 
       - name: Check for modified files
         id: git-check-soft
-        run: echo ::set-output name=modified::$(if git diff-index --quiet HEAD --; then echo "false"; else echo "true"; fi)
+        run: echo ::set-output name=modified::$(if git diff --exit-code --quiet; then echo "false"; else echo "true"; fi)
       - run: echo ${{ steps.git-check-soft.outputs.modified }}
-      - run: git diff-index HEAD --
+      - run: git diff --exit-code --quiet
       - run: false
       - name: Upload soft upgrade state
         if: ${{ steps.git-check-soft.outputs.modified == 'true' }}
@@ -45,7 +45,7 @@ jobs:
         with:
           name: soft-upgrade
           path: yarn.lock
-
+--exit-code --quiet
       - name: Hard upgrade
         id: hard-upgrade
         continue-on-error: true
@@ -71,7 +71,7 @@ jobs:
   # Todo: Whenever this is solved https://github.community/t/matrix-cannot-be-used-in-jobs-level-if/17177
   # add condition to skip hard tests if there isn't one (currently it will just fail at the download artifact step)
   test:
-    name: Test ${{matrix.upgrade}} upgrade (${{matrix.os}})
+    name: Test upgrade
     runs-on: ${{ matrix.os }}
     needs: [upgrade]
     if: ${{needs.upgrade.outputs.soft == 'true' || needs.upgrade.outputs.hard == 'true'}}
