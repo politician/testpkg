@@ -68,7 +68,7 @@ jobs:
 
   # Test hard upgrade
   hardtest:
-    name: Test hard upgrade
+    name: Test ${{matrix.upgrade}} upgrade
     needs: [upgrade]
     if: ${{needs.upgrade.outputs.soft == 'true' || needs.upgrade.outputs.hard == 'true'}}
     strategy:
@@ -115,33 +115,16 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
+        os: [ubuntu-latest]
     runs-on: ${{ matrix.os }}
     steps:
       - run: echo ${{needs.upgrade.result}}
       - run: echo ${{needs.hardtest.result}}
-      - run: echo ${{join(needs.hardtest.*.outputs.hard-fail)}}
+      - run: echo ${{join(needs.hardtest.outputs.*.hard-fail)}}
+      - run: echo ${{join(needs.hardtest.outputs.hard-fail.*)}}
+      - run: echo ${{join(needs.hardtest.outputs)}}
       - run: echo ${{join(needs.hardtest)}}
-      - name: Checkout code
-        uses: actions/checkout@master
-        with:
-          ref: ${{ github.head_ref }}
-
-      - name: Setup NodeJS environment
-        uses: actions/setup-node@v1
-        with:
-          node-version: 12
-
-      - name: Download soft upgrade state
-        uses: actions/download-artifact@v2
-        with:
-          name: soft-upgrade
-
-      - name: Install dependencies
-        run: yarn install --frozen-lockfile
-
-      - name: Run tests
-        run: yarn test
+      - run: false
 
   # Commit changes if upgrade was successful
   commit:
