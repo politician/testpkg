@@ -34,39 +34,36 @@ jobs:
         id: git-check-soft
         run: echo ::set-output name=modified::$(if git diff-index --quiet HEAD --; then echo "false"; else echo "true"; fi)
 
-      - name: Save soft upgrade state
-        if: ${{ steps.git-check-soft.outputs.modified == 'true' }}
-        run: mkdir .soft-upgrade && cp yarn.lock .soft-upgrade/yarn.lock && cp package.json .soft-upgrade/package.json
-
       - name: Upload soft upgrade state
         if: ${{ steps.git-check-soft.outputs.modified == 'true' }}
         uses: actions/upload-artifact@v2
         with:
           name: soft-upgrade
-          path: .soft-upgrade
+          path: yarn.lock
 
       - name: Hard upgrade
         id: hard-upgrade
         continue-on-error: true
-        run: yarn upgrade --latest
+        run: false
 
+        #run: yarn upgrade --latest
       - name: Check for modified files
-        if: ${{ steps.hard-upgrade.outcome != 'failure' }}
+        if: success()
         id: git-check-hard
         run: echo ::set-output name=modified::$(if git diff-index --quiet HEAD --; then echo "false"; else echo "true"; fi)
 
-      - name: Save hard upgrade state
-        if: ${{ steps.hard-upgrade.outcome != 'failure' && steps.git-check-hard.outputs.modified == 'true'}}
+      - name: Prepare hard upgrade state
+        if: success()
         run: mkdir .hard-upgrade && cp yarn.lock .hard-upgrade/yarn.lock && cp package.json .hard-upgrade/package.json
 
       - name: Upload hard upgrade state
-        if: ${{ steps.hard-upgrade.outcome != 'failure' && steps.git-check-hard.outputs.modified == 'true'}}
+        if: success()
         uses: actions/upload-artifact@v2
         with:
           name: hard-upgrade
           path: .hard-upgrade
 
-  # Test hard upgrade
+  # Test code with upgraded dependencies
   test:
     name: Test ${{matrix.upgrade}} upgrade (${{matrix.os}})
     needs: [upgrade]
@@ -103,27 +100,14 @@ jobs:
       - name: Run tests
         run: yarn test
 
+      - name: Run tests
+        if: ${{ matrix.os == 'ubuntu-latest' &&  matrix.upgrade == 'hard'}}
+        run: false
+
       - name: Set hard upgrade as failed
         id: hard-fail
         if: ${{ failure() &&  matrix.upgrade == 'hard'}}
         run: echo ::set-output name=failed::true
-
-  # Fallback to testing soft upgrade if hard upgrade testing failed
-  softtest:
-    name: check output
-    needs: [upgrade, test]
-    #if: ${{ needs.test.result != 'success' && needs.upgrade.outputs.soft == 'true' }}
-    runs-on: ubuntu-latest
-    steps:
-      - run: echo ${{needs.upgrade.result}}
-      - run: echo ${{needs.test.result}}
-      - run: echo ${{join(needs.test.outputs.hard-fail)}}
-      - run: echo ${{join(needs.test.*.outputs.hard-fail)}}
-      - run: echo ${{join(needs.test.outputs.*.hard-fail)}}
-      - run: echo ${{join(needs.test.outputs.hard-fail.*)}}
-      - run: echo ${{join(needs.test.outputs)}}
-      - run: echo ${{join(needs.test)}}
-      - run: false
 
   # Commit changes if upgrade was successful
   commit:
