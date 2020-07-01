@@ -4,10 +4,12 @@ updates:
     directory: '/'
     schedule:
       interval: 'daily'
-      time: '08:20'
     versioning-strategy: widen
+    labels:
+      - npm
+      - dependencies
+      - automerge
   - package-ecosystem: 'github-actions'
     directory: '/'
     schedule:
       interval: 'daily'
-      time: '09:00'
