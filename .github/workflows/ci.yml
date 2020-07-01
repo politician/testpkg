@@ -16,7 +16,7 @@ jobs:
           ref: ${{ github.head_ref }}
 
       - name: Setup NodeJS environment
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@v2.1.0
         with:
           node-version: 12
 
@@ -56,7 +56,7 @@ jobs:
           ref: ${{ github.head_ref }}
 
       - name: Setup NodeJS environment
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@v2.1.0
         with:
           node-version: 12
           registry-url: https://registry.npmjs.org
