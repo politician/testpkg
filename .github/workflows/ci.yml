@@ -130,30 +130,9 @@ jobs:
               repo: context.repo.repo,
               pull_number: context.payload.pull_request.number
             }).then((pr) => pr.data.labels)
-
-      - env:
-          LABELS: ${{ steps.get-labels.outputs.result }}
-          CONTAIN: ${{ contains(steps.get-labels.outputs.result.*.name, 'automerge') }}
-        run: echo "$LABELS" & echo "$CONTAIN"
-
-      # - name: Merge pull request
-      #   uses: pascalgn/automerge-action@v0.8.4
-      #   if: contains(fromJson(steps.get-labels.outputs.result).*.name, 'automerge')
-      #   env:
-      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      #     MERGE_DELETE_BRANCH: ${{ contains(fromJson(steps.get-labels.outputs.result).*.name, 'autodeletebranch') }}
-  # test:
-  #   name: Auto Merge Pull Request
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - name: Dump GitHub context
-  #       env:
-  #         GITHUB_CONTEXT: ${{ toJson(github) }}
-  #       run: echo "$GITHUB_CONTEXT"
-  #     - name: Get the latest list of labels
-  #       id: get-labels
-  #       uses: actions/github-script@master
-  #       with:
-  #         github-token: ${{secrets.GITHUB_TOKEN}}
-  #         script: |
-  #           console.log(context)
+      - name: Merge pull request
+        uses: pascalgn/automerge-action@v0.8.4
+        if: contains(fromJson(steps.get-labels.outputs.result).*.name, 'automerge')
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          MERGE_DELETE_BRANCH: ${{ contains(fromJson(steps.get-labels.outputs.result).*.name, 'autodeletebranch') }}
