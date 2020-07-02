@@ -1,4 +1,4 @@
-name: Build & Publish npm Package
+name: Repo Setup
 
 on: [push]
 
@@ -13,36 +13,49 @@ jobs:
         with:
           github-token: ${{secrets.GITHUB_TOKEN}}
           script: |
+            
             return Promise.all([
-              github.issues.createLabel({
+              github.issues.getLabel({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
                 name:'dada',
-                color:'FFFFFF'
+              }).catch({
+                github.issues.createLabel({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  name:'dada',
+                  color:'FFFFFF'
+                })
               }),
-              github.issues.createLabel({
+              github.issues.getLabel({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
                 name:'dede',
-                color:'000000'
-              }),
+              }).catch({
+                github.issues.createLabel({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  name:'dede',
+                  color:'FFFFFF'
+                })
+              })
             ])
 
-      - name: Delete this setup file
-        uses: actions/github-script@master
-        with:
-          github-token: ${{secrets.GITHUB_TOKEN}}
-          script: |
-            return github.repos.getContent({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              path: '.github/workflows/repo-setup.yml',
-            }).then((res) => {
-              github.repos.deleteFile({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                path: '.github/workflows/repo-setup.yml',
-                message: 'Delete repository setup file',
-                sha: res.data.sha,
-              })
-            })
+      # - name: Delete this setup file
+      #   uses: actions/github-script@master
+      #   with:
+      #     github-token: ${{secrets.GITHUB_TOKEN}}
+      #     script: |
+      #       return github.repos.getContent({
+      #         owner: context.repo.owner,
+      #         repo: context.repo.repo,
+      #         path: '.github/workflows/repo-setup.yml',
+      #       }).then((res) => {
+      #         github.repos.deleteFile({
+      #           owner: context.repo.owner,
+      #           repo: context.repo.repo,
+      #           path: '.github/workflows/repo-setup.yml',
+      #           message: 'Delete repository setup file',
+      #           sha: res.data.sha,
+      #         })
+      #       })
