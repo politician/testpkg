@@ -121,8 +121,20 @@ jobs:
     if: startsWith(github.event_name, 'pull_request')
     runs-on: ubuntu-latest
     steps:
-      - name: Merge 'automerge' labeled pull request
+      - name: Get the latest list of labels
+        id: get-labels
+        uses: actions/github-script@master
+        with:
+          github-token: ${{secrets.GITHUB_TOKEN}}
+          script: |
+            return github.pulls.get({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: context.event.number
+            }).labels
+      - name: Merge pull request
         uses: pascalgn/automerge-action@v0.8.4
+        if: contains(steps.get-labels.outputs.result.*.name, 'automerge')
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          MERGE_DELETE_BRANCH: true
+          MERGE_DELETE_BRANCH: ${{ contains(steps.get-labels.outputs.result.*.name, 'autodelete') }}
