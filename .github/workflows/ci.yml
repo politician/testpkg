@@ -116,7 +116,7 @@ jobs:
   automerge:
     name: Auto Merge Pull Request
     needs: [build]
-    if: startsWith(github.event_name, 'pull_request')
+    if: startsWith(github.event_name, 'pull_req')
     runs-on: ubuntu-latest
     steps:
       - name: Get the latest list of labels
@@ -127,9 +127,9 @@ jobs:
           script: |
             console.log(context)
             return github.pulls.get({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              pull_number: context.event.number ? context.event.number : context.event.pull_request.number
+              owner: context.repository.owner,
+              repo: context.repository.repo,
+              pull_number: context.pull_request.number
             }).labels
       - name: Merge pull request
         uses: pascalgn/automerge-action@v0.8.4
@@ -138,18 +138,18 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           MERGE_DELETE_BRANCH: ${{ contains(steps.get-labels.outputs.result.*.name, 'autodelete') }}
 
-  test:
-    name: Auto Merge Pull Request
-    runs-on: ubuntu-latest
-    steps:
-      - name: Dump GitHub context
-        env:
-          GITHUB_CONTEXT: ${{ toJson(github) }}
-        run: echo "$GITHUB_CONTEXT"
-      - name: Get the latest list of labels
-        id: get-labels
-        uses: actions/github-script@master
-        with:
-          github-token: ${{secrets.GITHUB_TOKEN}}
-          script: |
-            console.log(context)
+  # test:
+  #   name: Auto Merge Pull Request
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Dump GitHub context
+  #       env:
+  #         GITHUB_CONTEXT: ${{ toJson(github) }}
+  #       run: echo "$GITHUB_CONTEXT"
+  #     - name: Get the latest list of labels
+  #       id: get-labels
+  #       uses: actions/github-script@master
+  #       with:
+  #         github-token: ${{secrets.GITHUB_TOKEN}}
+  #         script: |
+  #           console.log(context)
