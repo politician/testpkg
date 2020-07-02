@@ -130,7 +130,8 @@ jobs:
               repo: context.repo.repo,
               pull_number: context.payload.pull_request.number
             })
-            console.log(pr)
+            console.log(pr.data)
+            console.log(pr.data.labels)
             return pr
       - env:
           GITHUB_CONTEXT: ${{ toJson(steps.get-labels.outputs.result.data.labels) }}
@@ -145,13 +146,13 @@ jobs:
         continue-on-error: true
 
       - env:
-          GITHUB_CONTEXT: ${{ toJson(steps.get-labels.outputs.result.labels.*.name) }}
-          CONTAIN: ${{ contains(fromJson(steps.get-labels.outputs.result.data.labels).*.name, 'automerge') }}
+          GITHUB_CONTEXT: ${{ toJson(steps.get-labels.outputs.result.data.labels.*.name) }}
+          CONTAIN: ${{ contains(fromJson(steps.get-labels.outputs.result.data.labels.*.name), 'automerge') }}
         run: echo "$GITHUB_CONTEXT" & echo "$CONTAIN"
         continue-on-error: true
 
       - env:
-          GITHUB_CONTEXT: ${{ fromJson(steps.get-labels.outputs.result.labels.*.name) }}
+          GITHUB_CONTEXT: ${{ fromJson(steps.get-labels.outputs.result.data.labels) }}
           CONTAIN: ${{ contains(fromJson(steps.get-labels.outputs.result.data.labels.*.name), 'automerge') }}
         run: echo "$GITHUB_CONTEXT" & echo "$CONTAIN"
         continue-on-error: true
