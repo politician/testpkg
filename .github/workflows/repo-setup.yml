@@ -30,7 +30,7 @@ jobs:
               github.issues.getLabel({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
-                name:'dede',
+                name:'dudu',
               }).catch((e) => {
                 github.issues.createLabel({
                   owner: context.repo.owner,
