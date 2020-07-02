@@ -7,6 +7,9 @@ jobs:
     name: Setup repo configuration
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout code
+        uses: actions/checkout@master
+
       - name: Set labels
         uses: actions/github-script@master
         continue-on-error: true
@@ -19,7 +22,7 @@ jobs:
               {name: 'dede', color: 'CCCCCC'},
               {name: 'doudou', color: 'CCCCCC'},
             ]
-            
+
             return Promise.all(
               labels.map(label => 
                 github.issues.getLabel({
@@ -37,21 +40,10 @@ jobs:
               )
             )
 
-      # - name: Delete this setup file
-      #   uses: actions/github-script@master
-      #   with:
-      #     github-token: ${{secrets.GITHUB_TOKEN}}
-      #     script: |
-      #       return github.repos.getContent({
-      #         owner: context.repo.owner,
-      #         repo: context.repo.repo,
-      #         path: '.github/workflows/repo-setup.yml',
-      #       }).then((res) => {
-      #         github.repos.deleteFile({
-      #           owner: context.repo.owner,
-      #           repo: context.repo.repo,
-      #           path: '.github/workflows/repo-setup.yml',
-      #           message: 'Delete repository setup file',
-      #           sha: res.data.sha,
-      #         })
-      #       })
+      - name: Remove repo setup file
+        uses: EndBug/add-and-commit@v4
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          remove: '.github/workflows/repo-setup.yml'
+          message: 'Remove repo setup file'
