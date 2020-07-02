@@ -128,11 +128,17 @@ jobs:
             try { console.log(context.pullRequest.number) } catch(e) {}
             try { console.log(context.payload.pull_request.number) } catch(e) {}
             try { console.log(github.event.pull_request.number) } catch(e) {}
-            return github.pulls.get({
+            try { console.log(context.pullRequest.number) } catch(e) {}
+            try { console.log(context.payload.pullRequest.number) } catch(e) {}
+            try { console.log(github.event.pullRequest.number) } catch(e) {}
+            var pr = github.pulls.get({
               owner: context.repo.owner,
               repo: context.repo.repo,
               pull_number: context.payload.pull_request.number
             })
+            console.log(context.repo.owner)
+            console.log(context.repo.repo)
+            console.log(pr)
       - env:
           GITHUB_CONTEXT: ${{ toJson(steps.get-labels.outputs.result.labels) }}
         run: echo "$GITHUB_CONTEXT"
