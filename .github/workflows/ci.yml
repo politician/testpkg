@@ -133,14 +133,14 @@ jobs:
             console.log(pr)
             return pr
       - env:
-          GITHUB_CONTEXT: ${{ toJson(steps.get-labels.outputs.result) }}
-          CONTAIN: ${{ contains(toJson(steps.get-labels.outputs.result.labels.*.name), 'automerge') }}
+          GITHUB_CONTEXT: ${{ toJson(steps.get-labels.outputs.result.data) }}
+          CONTAIN: ${{ contains(toJson(steps.get-labels.outputs.result.data.labels.*.name), 'automerge') }}
         run: echo "$GITHUB_CONTEXT" & echo "$CONTAIN"
         continue-on-error: true
 
       - env:
-          GITHUB_CONTEXT: ${{ steps.get-labels.outputs.result }}
-          CONTAIN: ${{ contains(steps.get-labels.outputs.result.labels.*.name, 'automerge') }}
+          GITHUB_CONTEXT: ${{ steps.get-labels.outputs.result.data }}
+          CONTAIN: ${{ contains(steps.get-labels.outputs.result.data.labels.*.name, 'automerge') }}
         run: echo "$GITHUB_CONTEXT" & echo "$CONTAIN"
         continue-on-error: true
 
@@ -154,12 +154,12 @@ jobs:
         run: echo "$GITHUB_CONTEXT"
         continue-on-error: true
 
-      - name: Merge pull request
-        uses: pascalgn/automerge-action@v0.8.4
-        if: contains(steps.get-labels.outputs.result.*.name, 'automerge')
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          MERGE_DELETE_BRANCH: ${{ contains(steps.get-labels.outputs.result.*.name, 'autodeletebranch') }}
+      # - name: Merge pull request
+      #   uses: pascalgn/automerge-action@v0.8.4
+      #   if: contains(steps.get-labels.outputs.result.*.name, 'automerge')
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      #     MERGE_DELETE_BRANCH: ${{ contains(steps.get-labels.outputs.result.*.name, 'autodeletebranch') }}
   # test:
   #   name: Auto Merge Pull Request
   #   runs-on: ubuntu-latest
