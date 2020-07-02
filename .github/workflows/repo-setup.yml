@@ -1,6 +1,6 @@
 name: Repo Setup
 
-on: [push]
+on: push
 
 jobs:
   setup:
@@ -20,7 +20,7 @@ jobs:
               {name: 'dependencies', color: 'ffffff', description: 'Modify dependencies'},
               {name: 'npm', color: 'cc3300', description: 'NPM dependencies'},
               {name: 'github actions', color: '000000', description: 'Github Actions dependencies'},
-              {name: 'automerge', color: 'ff5050'},
+              {name: 'automerge', color: 'ff5050', description: 'Merge branch if build passes'},
               {name: 'autodelete', color: 'ff0066', description: 'Delete branch after automerge'},
             ]
 
@@ -42,6 +42,25 @@ jobs:
               )
             )
 
+      - name: Set topics
+        uses: actions/github-script@master
+        continue-on-error: true
+        with:
+          github-token: ${{secrets.GITHUB_TOKEN}}
+          script: |
+            var topics = ['npm', 'library', 'es6', 'cjs', 'iife']
+
+            var {owner, repo} = context.repo
+            return github.repos.getAllTopics({
+              owner,
+              repo,
+            }).then((res) => 
+              github.repos.replaceAllTopics({
+                owner,
+                repo,
+                names: [...res.names, ...topics]
+              })
+            )
       # - name: Remove repo setup file
       #   uses: EndBug/add-and-commit@v4
       #   env:
