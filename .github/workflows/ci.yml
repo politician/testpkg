@@ -5,12 +5,10 @@ on:
     paths-ignore:
       - 'docs/**'
       - '**.md'
-      - '.gitignore'
   pull_request:
     paths-ignore:
       - 'docs/**'
       - '**.md'
-      - '.gitignore'
     types:
       - labeled
       - synchronize
@@ -130,7 +128,7 @@ jobs:
             return github.pulls.get({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              pull_number: context.event.number
+              pull_number: context.event.number ? context.event.number : context.event.pull_request.number
             }).labels
       - name: Merge pull request
         uses: pascalgn/automerge-action@v0.8.4
