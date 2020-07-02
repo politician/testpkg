@@ -131,7 +131,7 @@ jobs:
             try { console.log(context.pullRequest.number) } catch(e) {}
             try { console.log(context.payload.pullRequest.number) } catch(e) {}
             try { console.log(github.event.pullRequest.number) } catch(e) {}
-            var pr = github.pulls.get({
+            var pr = await github.pulls.get({
               owner: context.repo.owner,
               repo: context.repo.repo,
               pull_number: context.payload.pull_request.number
