@@ -115,7 +115,7 @@ jobs:
 
   automerge:
     name: Auto Merge Pull Request
-    #needs: [build]
+    needs: [build]
     if: startsWith(github.event_name, 'pull_req')
     runs-on: ubuntu-latest
     steps:
@@ -125,7 +125,7 @@ jobs:
         with:
           github-token: ${{secrets.GITHUB_TOKEN}}
           script: |
-            github.pulls.get({
+            return github.pulls.get({
               owner: context.repo.owner,
               repo: context.repo.repo,
               pull_number: context.payload.pull_request.number
@@ -133,14 +133,15 @@ jobs:
 
       - env:
           LABELS: ${{ steps.get-labels.outputs.result }}
-          CONTAIN: ${{ contains(fromJson(steps.get-labels.outputs.result).*.name, 'automerge') }}
+          CONTAIN: ${{ contains(steps.get-labels.outputs.result.*.name, 'automerge') }}
         run: echo "$LABELS" & echo "$CONTAIN"
+
       # - name: Merge pull request
       #   uses: pascalgn/automerge-action@v0.8.4
-      #   if: contains(steps.get-labels.outputs.result.*.name, 'automerge')
+      #   if: contains(fromJson(steps.get-labels.outputs.result).*.name, 'automerge')
       #   env:
       #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      #     MERGE_DELETE_BRANCH: ${{ contains(steps.get-labels.outputs.result.*.name, 'autodeletebranch') }}
+      #     MERGE_DELETE_BRANCH: ${{ contains(fromJson(steps.get-labels.outputs.result).*.name, 'autodeletebranch') }}
   # test:
   #   name: Auto Merge Pull Request
   #   runs-on: ubuntu-latest
