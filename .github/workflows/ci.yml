@@ -137,3 +137,20 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           MERGE_DELETE_BRANCH: ${{ contains(steps.get-labels.outputs.result.*.name, 'autodelete') }}
+
+  test:
+    name: Auto Merge Pull Request
+    needs: [build]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Dump GitHub context
+        env:
+          GITHUB_CONTEXT: ${{ toJson(github) }}
+        run: echo "$GITHUB_CONTEXT"
+      - name: Get the latest list of labels
+        id: get-labels
+        uses: actions/github-script@master
+        with:
+          github-token: ${{secrets.GITHUB_TOKEN}}
+          script: |
+            console.log(context)
