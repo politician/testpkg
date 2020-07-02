@@ -139,15 +139,17 @@ jobs:
             console.log(context.repo.owner)
             console.log(context.repo.repo)
             console.log(pr)
-            return pr.labels
+            return pr
       - env:
           GITHUB_CONTEXT: ${{ toJson(steps.get-labels.outputs.result.labels) }}
-        run: echo "$GITHUB_CONTEXT"
+          CONTAIN: ${{ contains(toJson(steps.get-labels.outputs.result.labels.*.name), 'automerge') }}
+        run: echo "$GITHUB_CONTEXT" & echo "$CONTAIN"
         continue-on-error: true
 
       - env:
           GITHUB_CONTEXT: ${{ steps.get-labels.outputs.result.labels }}
-        run: echo "$GITHUB_CONTEXT"
+          CONTAIN: ${{ contains(steps.get-labels.outputs.result.labels.*.name, 'automerge') }}
+        run: echo "$GITHUB_CONTEXT" & echo "$CONTAIN"
         continue-on-error: true
 
       - env:
