@@ -18,7 +18,7 @@ jobs:
                 owner: context.repo.owner,
                 repo: context.repo.repo,
                 name:'dada',
-                color:'000000'
+                color:'FFFFFF'
               }),
               github.issues.createLabel({
                 owner: context.repo.owner,
@@ -27,25 +27,6 @@ jobs:
                 color:'000000'
               }),
             ])
-
-      - name: Set labels 2
-        uses: actions/github-script@master
-        continue-on-error: true
-        with:
-          github-token: ${{secrets.GITHUB_TOKEN}}
-          script: |
-            return github.issues.createLabel({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                name:'dodo',
-                color:'000000'
-              },
-              {
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                name:'dudu',
-                color:'000000'
-              })
 
       - name: Delete this setup file
         uses: actions/github-script@master
