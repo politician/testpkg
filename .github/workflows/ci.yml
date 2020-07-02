@@ -125,19 +125,22 @@ jobs:
         with:
           github-token: ${{secrets.GITHUB_TOKEN}}
           script: |
-            console.log(context)
+            try {
+              console.log(context.pullRequest.number)
+              console.log(context.payload.pull_request.number)
+              console.log(github.event.pull_request.number)
+            } catch(e) {}
             return github.pulls.get({
-              owner: context.repository.owner,
-              repo: context.repository.repo,
-              pull_number: context.pull_request.number
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: context.pullRequest.number
             }).labels
       - name: Merge pull request
         uses: pascalgn/automerge-action@v0.8.4
         if: contains(steps.get-labels.outputs.result.*.name, 'automerge')
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          MERGE_DELETE_BRANCH: ${{ contains(steps.get-labels.outputs.result.*.name, 'autodelete') }}
-
+          MERGE_DELETE_BRANCH: ${{ contains(steps.get-labels.outputs.result.*.name, 'autodeletebranch') }}
   # test:
   #   name: Auto Merge Pull Request
   #   runs-on: ubuntu-latest
