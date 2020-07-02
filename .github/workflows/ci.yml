@@ -125,29 +125,21 @@ jobs:
         with:
           github-token: ${{secrets.GITHUB_TOKEN}}
           script: |
-            try { console.log(context.pullRequest.number) } catch(e) {}
-            try { console.log(context.payload.pull_request.number) } catch(e) {}
-            try { console.log(github.event.pull_request.number) } catch(e) {}
-            try { console.log(context.pullRequest.number) } catch(e) {}
-            try { console.log(context.payload.pullRequest.number) } catch(e) {}
-            try { console.log(github.event.pullRequest.number) } catch(e) {}
             var pr = await github.pulls.get({
               owner: context.repo.owner,
               repo: context.repo.repo,
               pull_number: context.payload.pull_request.number
             })
-            console.log(context.repo.owner)
-            console.log(context.repo.repo)
             console.log(pr)
             return pr
       - env:
-          GITHUB_CONTEXT: ${{ toJson(steps.get-labels.outputs.result.labels) }}
+          GITHUB_CONTEXT: ${{ toJson(steps.get-labels.outputs.result) }}
           CONTAIN: ${{ contains(toJson(steps.get-labels.outputs.result.labels.*.name), 'automerge') }}
         run: echo "$GITHUB_CONTEXT" & echo "$CONTAIN"
         continue-on-error: true
 
       - env:
-          GITHUB_CONTEXT: ${{ steps.get-labels.outputs.result.labels }}
+          GITHUB_CONTEXT: ${{ steps.get-labels.outputs.result }}
           CONTAIN: ${{ contains(steps.get-labels.outputs.result.labels.*.name, 'automerge') }}
         run: echo "$GITHUB_CONTEXT" & echo "$CONTAIN"
         continue-on-error: true
