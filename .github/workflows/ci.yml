@@ -125,6 +125,7 @@ jobs:
         with:
           github-token: ${{secrets.GITHUB_TOKEN}}
           script: |
+            console.log(context)
             return github.pulls.get({
               owner: context.repo.owner,
               repo: context.repo.repo,
