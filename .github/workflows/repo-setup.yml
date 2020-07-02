@@ -1,0 +1,67 @@
+name: Build & Publish npm Package
+
+on: [push]
+
+jobs:
+  setup:
+    name: Setup repo configuration
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set labels
+        uses: actions/github-script@master
+        continue-on-error: true
+        with:
+          github-token: ${{secrets.GITHUB_TOKEN}}
+          script: |
+            return Promise.all([
+              github.issues.createLabel({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                name:'dada',
+                color:'000000'
+              }),
+              github.issues.createLabel({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                name:'dede',
+                color:'000000'
+              }),
+            ])
+
+      - name: Set labels 2
+        uses: actions/github-script@master
+        continue-on-error: true
+        with:
+          github-token: ${{secrets.GITHUB_TOKEN}}
+          script: |
+            return github.issues.createLabel({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                name:'dodo',
+                color:'000000'
+              },
+              {
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                name:'dudu',
+                color:'000000'
+              })
+
+      - name: Delete this setup file
+        uses: actions/github-script@master
+        with:
+          github-token: ${{secrets.GITHUB_TOKEN}}
+          script: |
+            return github.repos.getContent({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              path: '.github/workflows/repo-setup.yml',
+            }).then((res) => {
+              github.repos.deleteFile({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                path: '.github/workflows/repo-setup.yml',
+                message: 'Delete repository setup file',
+                sha: res.data.sha,
+              })
+            })
