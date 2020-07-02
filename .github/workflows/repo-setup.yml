@@ -16,18 +16,19 @@ jobs:
           github-token: ${{secrets.GITHUB_TOKEN}}
           script: |
             var labels = [
-              {name: 'dependencies', color: 'ffffff', description: 'Modify dependencies'},
-              {name: 'npm', color: 'cc3300', description: 'NPM dependencies'},
-              {name: 'github actions', color: '000000', description: 'Github Actions dependencies'},
-              {name: 'automerge', color: 'ff5050', description: 'Merge branch if build passes'},
-              {name: 'autodelete', color: 'ff0066', description: 'Delete branch after automerge'},
+              {name: 'wip', color: '00cc99', description: 'Work in progress'},
+              {name: 'high-priority', color: 'ff9933', description: 'High priority'},
+              {name: 'medium-priority', color: 'ff9999', description: 'Medium priority'},
+              {name: 'low-priority', color: 'ff99ff', description: 'Low priority'},
             ]
 
             var {owner, repo} = context.repo
             return Promise.all(
               labels.map(({name, color, description}) => 
                 github.issues.getLabel({owner, repo, name})
-                .catch((e) => github.issues.createLabel({ owner, repo, name, color, description }))
+                .catch((e) => 
+                  github.issues.createLabel({ owner, repo, name, color, description })
+                )
               )
             )
       # - name: Set topics
