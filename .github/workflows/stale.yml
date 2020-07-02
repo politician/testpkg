@@ -1,0 +1,57 @@
+name: "Close stale issues"
+on:
+  schedule:
+  - cron: "0 0 * * *"
+
+jobs:
+  stale:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Stale no priority issues & pull requests
+      uses: actions/stale@v3
+      with:
+        repo-token: ${{ secrets.GITHUB_TOKEN }}
+        days-before-stale: 1
+        days-before-close: 1
+        stale-issue-message: 'This issue had no activity for **2 months**. It will be closed in **one week** unless there is some new activity.'
+        stale-issue-label: stale
+        exempt-issue-labels: high-priority,medium-priority,low-priority
+        stale-pr-message: 'This pull request had no activity for **2 months**. It will be closed in **one week** unless there is some new activity.'
+        stale-pr-label: stale
+        exempt-pr-labels: high-priority,medium-priority,low-priority
+
+    - name: Stale low-priority issues & pull requests
+      uses: actions/stale@v3
+      with:
+        repo-token: ${{ secrets.GITHUB_TOKEN }}
+        only-labels: low-priority
+        days-before-stale: 2
+        days-before-close: 2
+        stale-issue-message: 'This issue had no activity for **3 months**. It will be closed in **one week** unless there is some new activity.'
+        stale-issue-label: stale
+        stale-pr-message: 'This pull request had no activity for **3 months**. It will be closed in **one week** unless there is some new activity.'
+        stale-pr-label: stale
+
+    - name: Stale medium-priority issues & pull requests
+      uses: actions/stale@v3
+      with:
+        repo-token: ${{ secrets.GITHUB_TOKEN }}
+        only-labels: medium-priority
+        days-before-stale: 3
+        days-before-close: 3
+        stale-issue-message: 'This issue had no activity for **3 months**. It will be closed in **two weeks** unless there is some new activity.'
+        stale-issue-label: stale
+        stale-pr-message: 'This pull request had no activity for **3 months**. It will be closed in **two weeks** unless there is some new activity.'
+        stale-pr-label: stale
+
+    - name: Stale medium-priority issues & pull requests
+      uses: actions/stale@v3
+      with:
+        repo-token: ${{ secrets.GITHUB_TOKEN }}
+        only-labels: high-priority
+        days-before-stale: 4
+        days-before-close: 4
+        stale-issue-message: 'This issue had no activity for **6 months**. It will be closed in **two weeks** unless there is some new activity.'
+        stale-issue-label: stale
+        stale-pr-message: 'This pull request had no activity for **6 months**. It will be closed in **two weeks** unless there is some new activity.'
+        stale-pr-label: stale
