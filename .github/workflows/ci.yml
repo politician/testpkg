@@ -27,7 +27,7 @@ jobs:
     if: github.event.action != 'labeled' || github.event.label.name == 'automerge'
     strategy:
       matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
+        os: [ubuntu-latest]
     runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout code
@@ -133,6 +133,13 @@ jobs:
               repo: context.repo.repo,
               pull_number: context.payload.pull_request.number
             }).labels
+      - name: Dump GitHub context
+        env:
+          GITHUB_CONTEXTA: ${{ toJson(steps.get-labels.outputs.result) }}
+          GITHUB_CONTEXTB: ${{ steps.get-labels.outputs.result }}
+          GITHUB_CONTEXTC: ${{ toJson(steps.get-labels.outputs.result.*.name) }}
+          GITHUB_CONTEXTD: ${{ steps.get-labels.outputs.result.*.name }}
+        run: echo "$GITHUB_CONTEXTA" & echo "$GITHUB_CONTEXTB" & echo "$GITHUB_CONTEXTC" & echo "$GITHUB_CONTEXTD"
       - name: Merge pull request
         uses: pascalgn/automerge-action@v0.8.4
         if: contains(steps.get-labels.outputs.result.*.name, 'automerge')
