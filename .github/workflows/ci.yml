@@ -148,7 +148,6 @@ jobs:
           GITHUB_CONTEXT: ${{ toJson(steps.get-labels.outputs.result.labels.*.name) }}
           CONTAIN: ${{ contains(fromJson(steps.get-labels.outputs.result.data.labels).*.name, 'automerge') }}
         run: echo "$GITHUB_CONTEXT" & echo "$CONTAIN"
-        run: echo "$GITHUB_CONTEXT"
         continue-on-error: true
 
       - env:
