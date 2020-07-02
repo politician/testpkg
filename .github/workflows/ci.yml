@@ -47,7 +47,7 @@ jobs:
   publish:
     name: Publish
     needs: [build]
-    if: ${{ github.ref == 'refs/heads/master' }}
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/')
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -87,7 +87,6 @@ jobs:
         uses: codecov/codecov-action@v1.0.7
 
       - name: Publish NPM package
-        if: startsWith(github.ref, 'refs/tags/')
         run: yarn publish
         env:
           NODE_AUTH_TOKEN: ${{ secrets.npm_token }}
@@ -95,7 +94,7 @@ jobs:
   automerge:
     name: Auto Merge Pull Request
     needs: [build]
-    if: ${{ github.event_name == 'pull_request' && contains(github.event.pull_request.labels.*.name, 'automerge')}}
+    if: contains(github.event.pull_request.labels.*.name, 'automerge')
     runs-on: ubuntu-latest
     steps:
       - name: automerge
