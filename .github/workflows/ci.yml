@@ -125,32 +125,16 @@ jobs:
         with:
           github-token: ${{secrets.GITHUB_TOKEN}}
           script: |
-            var pr = await github.pulls.get({
+            return github.pulls.get({
               owner: context.repo.owner,
               repo: context.repo.repo,
               pull_number: context.payload.pull_request.number
-            })
-            console.log(pr.data)
-            console.log(pr.data.labels)
-            return pr.data.labels
+            }).then((pr) => pr.data.labels)
 
       - env:
-          GITHUB_CONTEXT: ${{ steps.get-labels.outputs.result }}
-          CONTAIN: ${{ contains(steps.get-labels.outputs.result.*.name, 'automerge') }}
-        run: echo "$GITHUB_CONTEXT" & echo "$CONTAIN"
-        continue-on-error: true
-
-      - env:
-          GITHUB_CONTEXT: ${{ toJson(steps.get-labels.outputs.result) }}
-          CONTAIN: ${{ contains(toJson(steps.get-labels.outputs.result.*.name), 'automerge') }}
-        run: echo "$GITHUB_CONTEXT" & echo "$CONTAIN"
-        continue-on-error: true
-
-      - env:
-          GITHUB_CONTEXT: ff
+          LABELS: ${{ steps.get-labels.outputs.result }}
           CONTAIN: ${{ contains(fromJson(steps.get-labels.outputs.result).*.name, 'automerge') }}
-        run: echo "$GITHUB_CONTEXT" & echo "$CONTAIN"
-        continue-on-error: true
+        run: echo "$LABELS" & echo "$CONTAIN"
       # - name: Merge pull request
       #   uses: pascalgn/automerge-action@v0.8.4
       #   if: contains(steps.get-labels.outputs.result.*.name, 'automerge')
