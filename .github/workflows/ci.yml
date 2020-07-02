@@ -140,7 +140,6 @@ jobs:
 
   test:
     name: Auto Merge Pull Request
-    needs: [build]
     runs-on: ubuntu-latest
     steps:
       - name: Dump GitHub context
