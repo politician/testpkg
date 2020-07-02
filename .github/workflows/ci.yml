@@ -133,13 +133,26 @@ jobs:
               repo: context.repo.repo,
               pull_number: context.payload.pull_request.number
             }).labels
-      - name: Dump GitHub context
-        env:
-          GITHUB_CONTEXTA: ${{ toJson(steps.get-labels.outputs.result) }}
-          GITHUB_CONTEXTB: ${{ steps.get-labels.outputs.result }}
-          GITHUB_CONTEXTC: ${{ toJson(steps.get-labels.outputs.result.*.name) }}
-          GITHUB_CONTEXTD: ${{ steps.get-labels.outputs.result.*.name }}
-        run: echo "$GITHUB_CONTEXTA" & echo "$GITHUB_CONTEXTB" & echo "$GITHUB_CONTEXTC" & echo "$GITHUB_CONTEXTD"
+      - env:
+          GITHUB_CONTEXT: ${{ toJson(steps.get-labels.outputs.result) }}
+        run: echo "$GITHUB_CONTEXT"
+        continue-on-error: true
+
+      - env:
+          GITHUB_CONTEXT: ${{ steps.get-labels.outputs.result }}
+        run: echo "$GITHUB_CONTEXT"
+        continue-on-error: true
+
+      - env:
+          GITHUB_CONTEXT: ${{ toJson(steps.get-labels.outputs.result.*.name) }}
+        run: echo "$GITHUB_CONTEXT"
+        continue-on-error: true
+
+      - env:
+          GITHUB_CONTEXT: ${{ steps.get-labels.outputs.result.*.name }}
+        run: echo "$GITHUB_CONTEXT"
+        continue-on-error: true
+
       - name: Merge pull request
         uses: pascalgn/automerge-action@v0.8.4
         if: contains(steps.get-labels.outputs.result.*.name, 'automerge')
