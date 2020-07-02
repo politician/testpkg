@@ -1,0 +1,51 @@
+name: Repo Setup
+
+on: [push]
+
+jobs:
+  setup:
+    name: Setup repo configuration
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@master
+
+      - name: Set labels
+        uses: actions/github-script@master
+        continue-on-error: true
+        with:
+          github-token: ${{secrets.GITHUB_TOKEN}}
+          script: |
+            var labels = [
+              {name: 'dependencies', color: 'ffffff', description: 'Modify dependencies'},
+              {name: 'npm', color: 'cc3300', description: 'NPM dependencies'},
+              {name: 'github actions', color: '000000', description: 'Github Actions dependencies'},
+              {name: 'automerge', color: 'ff5050'},
+              {name: 'autodelete', color: 'ff0066', description: 'Delete branch after automerge'},
+            ]
+
+            return Promise.all(
+              labels.map({name, color, description} => 
+                github.issues.getLabel({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  name,
+                }).catch((e) => {
+                  github.issues.createLabel({
+                    owner: context.repo.owner,
+                    repo: context.repo.repo,
+                    name,
+                    color,
+                    description
+                  })
+                })
+              )
+            )
+
+      # - name: Remove repo setup file
+      #   uses: EndBug/add-and-commit@v4
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      #   with:
+      #     remove: '.github/workflows/repo-setup.yml'
+      #     message: 'Remove repo setup file'
