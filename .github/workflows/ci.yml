@@ -133,27 +133,29 @@ jobs:
             console.log(pr)
             return pr
       - env:
-          GITHUB_CONTEXT: ${{ toJson(steps.get-labels.outputs.result.data) }}
+          GITHUB_CONTEXT: ${{ toJson(steps.get-labels.outputs.result.data.labels) }}
           CONTAIN: ${{ contains(toJson(steps.get-labels.outputs.result.data.labels.*.name), 'automerge') }}
         run: echo "$GITHUB_CONTEXT" & echo "$CONTAIN"
         continue-on-error: true
 
       - env:
-          GITHUB_CONTEXT: ${{ steps.get-labels.outputs.result.data }}
+          GITHUB_CONTEXT: ${{ steps.get-labels.outputs.result.data.labels }}
           CONTAIN: ${{ contains(steps.get-labels.outputs.result.data.labels.*.name, 'automerge') }}
         run: echo "$GITHUB_CONTEXT" & echo "$CONTAIN"
         continue-on-error: true
 
       - env:
           GITHUB_CONTEXT: ${{ toJson(steps.get-labels.outputs.result.labels.*.name) }}
+          CONTAIN: ${{ contains(fromJson(steps.get-labels.outputs.result.data.labels).*.name, 'automerge') }}
+        run: echo "$GITHUB_CONTEXT" & echo "$CONTAIN"
         run: echo "$GITHUB_CONTEXT"
         continue-on-error: true
 
       - env:
-          GITHUB_CONTEXT: ${{ steps.get-labels.outputs.result.labels.*.name }}
-        run: echo "$GITHUB_CONTEXT"
+          GITHUB_CONTEXT: ${{ fromJson(steps.get-labels.outputs.result.labels.*.name) }}
+          CONTAIN: ${{ contains(fromJson(steps.get-labels.outputs.result.data.labels.*.name), 'automerge') }}
+        run: echo "$GITHUB_CONTEXT" & echo "$CONTAIN"
         continue-on-error: true
-
       # - name: Merge pull request
       #   uses: pascalgn/automerge-action@v0.8.4
       #   if: contains(steps.get-labels.outputs.result.*.name, 'automerge')
