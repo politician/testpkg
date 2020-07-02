@@ -12,7 +12,6 @@ jobs:
 
       - name: Set labels
         uses: actions/github-script@master
-        continue-on-error: true
         with:
           github-token: ${{secrets.GITHUB_TOKEN}}
           script: |
@@ -24,43 +23,30 @@ jobs:
               {name: 'autodelete', color: 'ff0066', description: 'Delete branch after automerge'},
             ]
 
+            var {owner, repo} = context.repo
             return Promise.all(
               labels.map(({name, color, description}) => 
-                github.issues.getLabel({
-                  owner: context.repo.owner,
-                  repo: context.repo.repo,
-                  name,
-                }).catch((e) => {
-                  github.issues.createLabel({
-                    owner: context.repo.owner,
-                    repo: context.repo.repo,
-                    name,
-                    color,
-                    description
-                  })
-                })
+                github.issues.getLabel({owner, repo, name})
+                .catch((e) => github.issues.createLabel({ owner, repo, name, color, description }))
               )
             )
-
-      - name: Set topics
-        uses: actions/github-script@master
-        continue-on-error: true
-        with:
-          github-token: ${{secrets.GITHUB_TOKEN}}
-          script: |
-            var topics = ['npm', 'library', 'es6', 'cjs', 'iife']
-
-            var {owner, repo} = context.repo
-            return github.repos.getAllTopics({
-              owner,
-              repo,
-            }).then((res) => 
-              github.repos.replaceAllTopics({
-                owner,
-                repo,
-                names: [...res.data.names, ...topics]
-              })
-            )
+      # - name: Set topics
+      #   uses: actions/github-script@master
+      #   with:
+      #     github-token: ${{secrets.GITHUB_TOKEN}}
+      #     script: |
+      #       var topics = ['npm', 'library', 'es6', 'cjs', 'iife']
+      #       var {owner, repo} = context.repo
+      #       return github.repos.getAllTopics({
+      #         owner,
+      #         repo,
+      #       }).then((res) =>
+      #         github.repos.replaceAllTopics({
+      #           owner,
+      #           repo,
+      #           names: [...res.data.names, ...topics]
+      #         })
+      #       )
       # - name: Remove repo setup file
       #   uses: EndBug/add-and-commit@v4
       #   env:
