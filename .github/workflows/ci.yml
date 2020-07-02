@@ -125,15 +125,13 @@ jobs:
         with:
           github-token: ${{secrets.GITHUB_TOKEN}}
           script: |
-            try {
-              console.log(context.pullRequest.number)
-              console.log(context.payload.pull_request.number)
-              console.log(github.event.pull_request.number)
-            } catch(e) {}
+            try { console.log(context.pullRequest.number) } catch(e) {}
+            try { console.log(context.payload.pull_request.number) } catch(e) {}
+            try { console.log(github.event.pull_request.number) } catch(e) {}
             return github.pulls.get({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              pull_number: context.pullRequest.number
+              pull_number: context.payload.pull_request.number
             }).labels
       - name: Merge pull request
         uses: pascalgn/automerge-action@v0.8.4
