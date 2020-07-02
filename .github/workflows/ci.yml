@@ -115,7 +115,7 @@ jobs:
 
   automerge:
     name: Auto Merge Pull Request
-    needs: [build]
+    #needs: [build]
     if: startsWith(github.event_name, 'pull_req')
     runs-on: ubuntu-latest
     steps:
@@ -132,24 +132,24 @@ jobs:
               owner: context.repo.owner,
               repo: context.repo.repo,
               pull_number: context.payload.pull_request.number
-            }).labels
+            })
       - env:
-          GITHUB_CONTEXT: ${{ toJson(steps.get-labels.outputs.result) }}
+          GITHUB_CONTEXT: ${{ toJson(steps.get-labels.outputs.result.labels) }}
         run: echo "$GITHUB_CONTEXT"
         continue-on-error: true
 
       - env:
-          GITHUB_CONTEXT: ${{ steps.get-labels.outputs.result }}
+          GITHUB_CONTEXT: ${{ steps.get-labels.outputs.result.labels }}
         run: echo "$GITHUB_CONTEXT"
         continue-on-error: true
 
       - env:
-          GITHUB_CONTEXT: ${{ toJson(steps.get-labels.outputs.result.*.name) }}
+          GITHUB_CONTEXT: ${{ toJson(steps.get-labels.outputs.result.labels.*.name) }}
         run: echo "$GITHUB_CONTEXT"
         continue-on-error: true
 
       - env:
-          GITHUB_CONTEXT: ${{ steps.get-labels.outputs.result.*.name }}
+          GITHUB_CONTEXT: ${{ steps.get-labels.outputs.result.labels.*.name }}
         run: echo "$GITHUB_CONTEXT"
         continue-on-error: true
 
