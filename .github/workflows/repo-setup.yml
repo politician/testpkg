@@ -13,33 +13,29 @@ jobs:
         with:
           github-token: ${{secrets.GITHUB_TOKEN}}
           script: |
+            var labels = [
+              {name: 'dada', color: 'CCCCCC'},
+              {name: 'damdam', color: 'CCCCCC'},
+              {name: 'dede', color: 'CCCCCC'},
+              {name: 'doudou', color: 'CCCCCC'},
+            ]
             
-            return Promise.all([
-              github.issues.getLabel({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                name:'dada',
-              }).catch((e) => {
-                github.issues.createLabel({
+            return Promise.all(
+              labels.map(label => 
+                github.issues.getLabel({
                   owner: context.repo.owner,
                   repo: context.repo.repo,
-                  name:'dada',
-                  color:'FFFFFF'
+                  name: label.name,
+                }).catch((e) => {
+                  github.issues.createLabel({
+                    owner: context.repo.owner,
+                    repo: context.repo.repo,
+                    name: label.name,
+                    color: label.color
+                  })
                 })
-              }),
-              github.issues.getLabel({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                name:'dudu',
-              }).catch((e) => {
-                github.issues.createLabel({
-                  owner: context.repo.owner,
-                  repo: context.repo.repo,
-                  name:'dudu',
-                  color:'FFFFFF'
-                })
-              })
-            ])
+              )
+            )
 
       # - name: Delete this setup file
       #   uses: actions/github-script@master
