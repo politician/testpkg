@@ -58,7 +58,7 @@ jobs:
               github.repos.replaceAllTopics({
                 owner,
                 repo,
-                names: [...res.names, ...topics]
+                names: [...res.data.names, ...topics]
               })
             )
       # - name: Remove repo setup file
