@@ -139,6 +139,7 @@ jobs:
             console.log(context.repo.owner)
             console.log(context.repo.repo)
             console.log(pr)
+            return pr.labels
       - env:
           GITHUB_CONTEXT: ${{ toJson(steps.get-labels.outputs.result.labels) }}
         run: echo "$GITHUB_CONTEXT"
