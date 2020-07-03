@@ -1,0 +1,154 @@
+name: Upgrade NPM dependencies
+
+env:
+  node-version: 12
+
+on:
+  schedule:
+    # Every Monday at 00:00
+    - cron: '0 0 * * 1'
+
+jobs:
+  # Upgrade in two ways:
+  # - soft: only upgrade dependencies constrained by the versions specified in package.json
+  # - hard: upgrade all dependencies to their latest versions
+  upgrade:
+    name: Upgrade dependencies
+    runs-on: ubuntu-latest
+    outputs:
+      soft: ${{ steps.git-check-soft.outputs.modified }}
+      hard: ${{ steps.git-check-hard.outputs.modified }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@master
+        with:
+          ref: ${{ github.head_ref }}
+
+      - name: Setup NodeJS environment
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ env.node-version }}
+
+      - name: Soft upgrade
+        run: yarn upgrade
+
+      - name: Check for modified files
+        id: git-check-soft
+        run: echo ::set-output name=modified::$(if git diff --exit-code --quiet; then echo "false"; else echo "true"; fi)
+
+      - name: Upload soft upgrade state
+        if: ${{ steps.git-check-soft.outputs.modified == 'true' }}
+        uses: actions/upload-artifact@v2
+        with:
+          name: soft-upgrade
+          path: yarn.lock
+
+      - name: Hard upgrade
+        id: hard-upgrade
+        continue-on-error: true
+        run: yarn upgrade --latest
+
+      - name: Check for modified files
+        if: ${{ steps.hard-upgrade.outcome != 'failure' }}
+        id: git-check-hard
+        run: echo ::set-output name=modified::$(if git diff --exit-code --quiet; then echo "false"; else echo "true"; fi)
+
+      - name: Prepare hard upgrade state
+        if: ${{ steps.hard-upgrade.outcome != 'failure' && steps.git-check-hard.outputs.modified == 'true'}}
+        run: mkdir .hard-upgrade && cp yarn.lock .hard-upgrade/yarn.lock && cp package.json .hard-upgrade/package.json
+
+      - name: Upload hard upgrade state
+        if: ${{ steps.hard-upgrade.outcome != 'failure' && steps.git-check-hard.outputs.modified == 'true'}}
+        uses: actions/upload-artifact@v2
+        with:
+          name: hard-upgrade
+          path: .hard-upgrade
+
+  # Test code with upgraded dependencies
+  # Todo: Whenever this is solved https://github.community/t/matrix-cannot-be-used-in-jobs-level-if/17177
+  # add condition to skip hard tests if there isn't one (currently it will just fail at the download artifact step)
+  test:
+    name: Test
+    runs-on: ${{ matrix.os }}
+    needs: [upgrade]
+    if: ${{needs.upgrade.outputs.soft == 'true' || needs.upgrade.outputs.hard == 'true'}}
+    continue-on-error: ${{ matrix.upgrade == 'hard' }} # Allow hard tests to fail
+    strategy:
+      fail-fast: true
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        upgrade: [soft, hard]
+    outputs:
+      hard-fail: ${{ steps.hard-fail.outputs.failed }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@master
+        with:
+          ref: ${{ github.head_ref }}
+
+      - name: Download ${{matrix.upgrade}} upgrade state
+        uses: actions/download-artifact@v2
+        with:
+          name: ${{matrix.upgrade}}-upgrade
+
+      - name: Setup NodeJS environment
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ env.node-version }}
+
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Run tests
+        run: yarn test
+
+      - name: Set hard upgrade as failed
+        id: hard-fail
+        if: ${{ failure() &&  matrix.upgrade == 'hard'}}
+        run: echo ::set-output name=failed::true
+
+  # Commit changes if upgrade was successful
+  commit:
+    name: Commit changes
+    needs: [test]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@master
+        with:
+          ref: ${{ github.head_ref }}
+
+      - name: Download soft upgrade state
+        if: ${{ needs.test.outputs.hard-fail == 'true' }}
+        uses: actions/download-artifact@v2
+        with:
+          name: soft-upgrade
+
+      - name: Download hard upgrade state
+        if: ${{ needs.test.outputs.hard-fail != 'true' }}
+        uses: actions/download-artifact@v2
+        with:
+          name: hard-upgrade
+
+      - name: Create Pull Request
+        id: cpr
+        uses: peter-evans/create-pull-request@v2
+        with:
+          branch: upgrade-dependencies-${{github.ref}}
+          commit-message: Upgrade dependencies
+          title: Changes by Upgrade action workflow
+          labels: automerge, dependencies
+
+      - name: Merge Pull Request
+        uses: actions/github-script@master
+        if: ${{ steps.cpr.outputs.pull-request-number > 0 }}
+        env:
+          pr_number: ${{ steps.cpr.outputs.pull-request-number }}
+        with:
+          github-token: ${{secrets.GITHUB_TOKEN}}
+          script: |
+            github.pulls.merge({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: process.env['pr_number']
+            })
