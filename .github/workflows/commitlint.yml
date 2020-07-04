@@ -4,12 +4,40 @@ on: [pull_request]
 jobs:
   lint:
     runs-on: ubuntu-latest
-    env:
-      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@master
         with:
           fetch-depth: 0
+
       - uses: wagoid/commitlint-github-action@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           configFile: .config/commitlint.config.js
+
+      - uses: mshick/add-pr-comment@v1
+        if: failure()
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          message: |
+            Some of your commits are not properly formed.
+
+            ### Amend last commit message
+
+            - `git commit --amend`
+
+            - `git push --force`
+
+            ### Amend multiple commit messages
+
+            - Display list of the *x* last commits on the current branch
+              `git rebase -i HEAD~5`
+
+            - Replace `pick` by `reword` in front of the commit messsage(s) you would like to change. Save and close the commit list file.
+
+            - Edit each commit message.
+
+            - `git push --force`
+
+            *More information in [GitHub docs](https://docs.github.com/en/github/committing-changes-to-your-project/changing-a-commit-message#amending-older-or-multiple-commit-messages)*
