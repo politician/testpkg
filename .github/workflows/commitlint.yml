@@ -22,7 +22,8 @@ jobs:
         with:
           message: |
             Some of your commits are not properly formed.
-            See the errors ${{ github.run_id }}
+
+            [See the errors](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}) and read our [contribution guidelines](https://github.com/${{ github.repository }}/blob/master/README.md)
 
             ### Amend last commit message
 
