@@ -22,6 +22,7 @@ jobs:
         with:
           message: |
             Some of your commits are not properly formed.
+            See the errors ${{ github.run_id }}
 
             ### Amend last commit message
 
