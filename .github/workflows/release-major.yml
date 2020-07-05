@@ -1,6 +1,6 @@
 name: Release
 on:
-  push:
+  push
   schedule:
     # Every Monday at 00:00
     - cron: '0 0 * * 1'
