@@ -23,7 +23,7 @@ jobs:
           message: |
             Some of your commits are not properly formed.
 
-            [See the errors](https://github.com/${{ github.repository }}/runs/${{ github.run_number }}?check_suite_focus=true) and read our [contribution guidelines](https://github.com/${{ github.repository }}/blob/master/README.md)
+            [See the errors](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}) and read our [contribution guidelines](https://github.com/${{ github.repository }}/blob/master/README.md)
 
             ### Amend last commit message
 
