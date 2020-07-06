@@ -8,6 +8,12 @@ module.exports = {
       '@semantic-release/commit-analyzer',
       {
         preset: 'conventionalcommits',
+        releaseRules: [
+          { type: 'Fix', release: 'patch' },
+          { type: 'Fix', scope: 'core-*', release: 'minor' },
+          { type: 'Chore', release: 'patch' },
+          { scope: 'no-release', release: false },
+        ],
       },
     ],
     '@semantic-release/release-notes-generator',
@@ -15,7 +21,13 @@ module.exports = {
     [
       '@semantic-release/github',
       {
-        assets: pkg.files,
+        assets: [
+          pkg.files,
+          {
+            path: 'olivr-testpkg-${nextRelease.gitTag}.tgz',
+            label: '${nextRelease.gitTag}',
+          },
+        ],
       },
     ],
   ],
