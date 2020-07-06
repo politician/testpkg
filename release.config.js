@@ -27,13 +27,7 @@ module.exports = {
     [
       '@semantic-release/github',
       {
-        assets: [
-          pkg.files,
-          {
-            path: 'olivr-testpkg-*.tgz',
-            label: '${nextRelease.gitTag}',
-          },
-        ],
+        assets: '*.tgz',
       },
     ],
   ],
