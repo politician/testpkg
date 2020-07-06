@@ -27,7 +27,12 @@ module.exports = {
     [
       '@semantic-release/github',
       {
-        assets: ['*.tgz'],
+        assets: [
+          {
+            path: '*-${nextRelease.gitTag}.tgz',
+            label: 'Release ${nextRelease.gitTag}',
+          },
+        ],
       },
     ],
   ],
