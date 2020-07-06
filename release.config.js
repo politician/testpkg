@@ -30,7 +30,7 @@ module.exports = {
         assets: [
           pkg.files,
           {
-            path: 'olivr-testpkg-${nextRelease.gitTag}.tgz',
+            path: 'olivr-testpkg-*.tgz',
             label: '${nextRelease.gitTag}',
           },
         ],
