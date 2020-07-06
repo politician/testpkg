@@ -19,6 +19,12 @@ module.exports = {
     '@semantic-release/release-notes-generator',
     '@semantic-release/npm',
     [
+      '@semantic-release/exec',
+      {
+        prepare: 'yarn pack',
+      },
+    ],
+    [
       '@semantic-release/github',
       {
         assets: [
