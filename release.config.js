@@ -21,7 +21,7 @@ module.exports = {
     [
       '@semantic-release/exec',
       {
-        prepare: 'pwd && touch dododo && yarn pack',
+        prepareCmd: 'pwd && touch dododo && yarn pack',
       },
     ],
     [
