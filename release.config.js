@@ -21,13 +21,13 @@ module.exports = {
     [
       '@semantic-release/exec',
       {
-        prepare: 'yarn pack',
+        prepare: 'pwd && touch dododo && yarn pack',
       },
     ],
     [
       '@semantic-release/github',
       {
-        assets: '*.tgz',
+        assets: ['*.tgz', 'dododo'],
       },
     ],
   ],
