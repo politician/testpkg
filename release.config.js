@@ -29,7 +29,7 @@ module.exports = {
       {
         assets: [
           {
-            path: '*-${nextRelease.gitTag}.tgz',
+            path: '*-v*.tgz',
             label: 'Release ${nextRelease.gitTag}',
           },
         ],
