@@ -1,5 +1,5 @@
 // Import your custom convention configuration
-const convention = require('./.config/commit-convention.json')
+const convention = require(__dirname + '/commit-convention.json')
 
 // Enforce convention's sentence case settings
 const sentenceCase = (str, sentenceCase = true) =>
@@ -13,7 +13,7 @@ const releaseRules = convention.types.map(({ name, releaseType }) => ({
 
 // Changelog sections for each type
 const logSections = convention.types.map(({ name, logSection }) => ({
-  type: sentenceCase(name, convention.sentenceCase.type),
+  type: sentenceCase(name, false),
   section: logSection,
   hidden: logSection ? false : true,
 }))
@@ -31,25 +31,16 @@ module.exports = {
       '@semantic-release/release-notes-generator',
       {
         preset: 'conventionalcommits',
-        presetConfig: {
-          types: logSections,
-          header: 'okkkk',
-        },
+        presetConfig: { types: logSections },
       },
     ],
-    '@semantic-release/npm',
-    [
-      '@semantic-release/exec',
-      {
-        prepareCmd: 'yarn pack',
-      },
-    ],
+    ['@semantic-release/npm', { tarballDir: '.latest' }],
     [
       '@semantic-release/github',
       {
         assets: [
           {
-            path: '*-v*.tgz',
+            path: '.latest/*-v*.tgz',
             label: 'Release ${nextRelease.gitTag}',
           },
         ],

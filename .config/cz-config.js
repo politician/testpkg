@@ -5,7 +5,7 @@
  */
 
 // Import your custom convention configuration
-const convention = require('./commit-convention.json')
+const convention = require(__dirname + '/commit-convention.json')
 
 // Enforce convention's sentence case settings
 const sentenceCase = (str, sentenceCase = true) =>
