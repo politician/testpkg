@@ -1,3 +1,10 @@
+### [0.9.1](https://github.com/incorrupt/testpkg/compare/v0.9.0...v0.9.1) (2020-07-07)
+
+
+### Bug Fixes
+
+* Ok this is a patch ([70e778b](https://github.com/incorrupt/testpkg/commit/70e778bf7cb2d51ef03609bf1a56e78d853fffe7))
+
 ## [0.9.0](https://github.com/incorrupt/testpkg/compare/v0.8.0...v0.9.0) (2020-07-07)
 
 
