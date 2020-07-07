@@ -36,6 +36,12 @@ module.exports = {
     ],
     ['@semantic-release/npm', { tarballDir: '.latest' }],
     [
+      '@semantic-release/exec',
+      {
+        publish: 'ls .latest',
+      },
+    ],
+    [
       '@semantic-release/github',
       {
         assets: [
