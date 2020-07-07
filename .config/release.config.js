@@ -34,19 +34,14 @@ module.exports = {
         presetConfig: { types: logSections },
       },
     ],
-    [
-      '@semantic-release/changelog',
-      {
-        changelogFile: 'docs/CHANGELOG.md',
-      },
-    ],
-    [('@semantic-release/npm', { tarballDir: '.latest' })],
+    ['@semantic-release/changelog', { changelogFile: 'docs/CHANGELOG.md' }],
+    ['@semantic-release/npm', { tarballDir: '.latest' }],
     [
       '@semantic-release/git',
       {
         assets: ['docs', 'package.json'],
         message:
-          'chore(release): ${nextRelease.version} [skip ci]\n\n${nextRelease.notes}',
+          'Chore(release): ${nextRelease.version}\n\n${nextRelease.notes}',
       },
     ],
     [
