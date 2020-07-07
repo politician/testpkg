@@ -1,5 +1,5 @@
 name: Commitlint
-on: [pull_request]
+on: [push, pull_request]
 
 jobs:
   lint:
@@ -16,14 +16,14 @@ jobs:
           configFile: .config/commitlint.config.js
 
       - uses: mshick/add-pr-comment@v1
-        if: failure()
+        if: failure() && github.event_name == 'pull_request'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           message: |
             Some of your commits are not properly formed.
 
-            [See the errors](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}) and read our [contribution guidelines](https://github.com/${{ github.repository }}/blob/master/README.md)
+            [See the errors](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}) and read our [contribution guidelines](https://github.com/${{ github.repository }}/blob/master/docs/CONTRIBUTING.md)
 
             ### Amend last commit message
 
