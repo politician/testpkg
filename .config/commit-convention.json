@@ -1,0 +1,49 @@
+{
+  "uppercase": {
+    "type": true,
+    "scope": false,
+    "subject": true
+  },
+  "types": [
+    {
+      "name": "feat",
+      "description": "feat:     A new feature",
+      "section": "Features"
+    },
+    {
+      "name": "fix",
+      "description": "fix:      A bug fix",
+      "section": "Bug Fixes"
+    },
+    {
+      "name": "docs",
+      "description": "docs:     Documentation only changes",
+      "hidden": true
+    },
+    {
+      "name": "chore",
+      "description": "chore:    Changes to the build process or auxiliary tools",
+      "hidden": true
+    },
+    {
+      "name": "style",
+      "description": "style:    Changes that do not affect the meaning of the code\n            (white-space, formatting, missing semi-colons, etc)",
+      "hidden": true
+    },
+    {
+      "name": "refactor",
+      "description": "refactor: A code change that neither fixes a bug nor adds a feature",
+      "hidden": true
+    },
+    {
+      "name": "perf",
+      "description": "perf:     A code change that improves performance",
+      "hidden": true
+    },
+    {
+      "name": "test",
+      "description": "test:     Adding missing tests",
+      "hidden": true
+    }
+  ]
+}
