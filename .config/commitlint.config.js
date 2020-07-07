@@ -44,8 +44,8 @@ module.exports = {
     'scope-enum': [scopeValidationLevel, 'always', validScopes],
     'type-enum': [2, 'always', validTypes],
     'subject-case': upperCaseSubject
-      ? [2, 'always', ['sentence-case']]
+      ? [1, 'always', ['sentence-case']]
       : undefined,
-    'type-case': upperCaseType ? [2, 'always', ['sentence-case']] : undefined,
+    'type-case': upperCaseType ? [1, 'always', ['sentence-case']] : undefined,
   },
 }
