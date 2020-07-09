@@ -1,3 +1,10 @@
+## [0.10.0](https://github.com/incorrupt/testpkg/compare/v0.9.1...v0.10.0) (2020-07-09)
+
+
+### Features
+
+* Create pr workflow ([e2d9b32](https://github.com/incorrupt/testpkg/commit/e2d9b3251d8271ddaea83deb1fdcd293ce4e0a71))
+
 ### [0.9.1](https://github.com/incorrupt/testpkg/compare/v0.9.0...v0.9.1) (2020-07-07)
 
 
