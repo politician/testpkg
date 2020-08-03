@@ -132,7 +132,7 @@ jobs:
             }).then((pr) => pr.data.labels)
 
       - name: Merge pull request
-        uses: pascalgn/automerge-action@v0.8.4
+        uses: pascalgn/automerge-action@v0.9.0
         if: contains(fromJson(steps.get-labels.outputs.result).*.name, 'automerge')
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
