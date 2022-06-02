@@ -65,7 +65,7 @@
     "@semantic-release/changelog": "^5.0.1",
     "@semantic-release/exec": "^5.0.0",
     "@semantic-release/git": "^9.0.0",
-    "@types/jest": "^26.0.0",
+    "@types/jest": "^28.1.0",
     "@typescript-eslint/eslint-plugin": "^4.0.0",
     "@typescript-eslint/parser": "^3.2.0",
     "@vue/babel-preset-app": "^4.4.1",
@@ -83,7 +83,7 @@
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-prettier": "^3.1.3",
     "husky": "^4.2.5",
-    "jest": "^26.0.1",
+    "jest": "^28.1.0",
     "prettier": "^2.0.5",
     "semantic-release": "^17.1.1",
     "typescript": "^4.0.2"
